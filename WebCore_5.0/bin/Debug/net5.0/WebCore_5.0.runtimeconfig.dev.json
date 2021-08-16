@@ -1,0 +1,8 @@
+{
+  "runtimeOptions": {
+    "additionalProbingPaths": [
+      "C:\\Users\\MIKOLKA\\.dotnet\\store\\|arch|\\|tfm|",
+      "C:\\Users\\MIKOLKA\\.nuget\\packages"
+    ]
+  }
+}
