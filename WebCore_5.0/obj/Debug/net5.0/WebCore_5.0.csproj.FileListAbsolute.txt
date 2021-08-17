@@ -167,3 +167,13 @@ D:\Users\MIKOLKA\PV911\WebCore_5.0\obj\Debug\net5.0\Razor\Views\Categories\Delet
 D:\Users\MIKOLKA\PV911\WebCore_5.0\obj\Debug\net5.0\Razor\Views\Categories\Details.cshtml.g.cs
 D:\Users\MIKOLKA\PV911\WebCore_5.0\obj\Debug\net5.0\Razor\Views\Categories\Edit.cshtml.g.cs
 D:\Users\MIKOLKA\PV911\WebCore_5.0\obj\Debug\net5.0\Razor\Views\Categories\Index.cshtml.g.cs
+D:\Users\MIKOLKA\PV911\WebCore_5.0\obj\Debug\net5.0\Razor\Views\Products\Create.cshtml.g.cs
+D:\Users\MIKOLKA\PV911\WebCore_5.0\obj\Debug\net5.0\Razor\Views\Products\Delete.cshtml.g.cs
+D:\Users\MIKOLKA\PV911\WebCore_5.0\obj\Debug\net5.0\Razor\Views\Products\Details.cshtml.g.cs
+D:\Users\MIKOLKA\PV911\WebCore_5.0\obj\Debug\net5.0\Razor\Views\Products\Edit.cshtml.g.cs
+D:\Users\MIKOLKA\PV911\WebCore_5.0\obj\Debug\net5.0\Razor\Views\Products\Index.cshtml.g.cs
+D:\Users\MIKOLKA\PV911\WebCore_5.0\obj\Debug\net5.0\Razor\Views\Vendors\Create.cshtml.g.cs
+D:\Users\MIKOLKA\PV911\WebCore_5.0\obj\Debug\net5.0\Razor\Views\Vendors\Delete.cshtml.g.cs
+D:\Users\MIKOLKA\PV911\WebCore_5.0\obj\Debug\net5.0\Razor\Views\Vendors\Details.cshtml.g.cs
+D:\Users\MIKOLKA\PV911\WebCore_5.0\obj\Debug\net5.0\Razor\Views\Vendors\Edit.cshtml.g.cs
+D:\Users\MIKOLKA\PV911\WebCore_5.0\obj\Debug\net5.0\Razor\Views\Vendors\Index.cshtml.g.cs

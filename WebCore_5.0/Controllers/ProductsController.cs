@@ -1,29 +1,32 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
 using WebCore_5._0.Data;
 using WebCore_5._0.Entities;
 
 namespace WebCore_5._0.Controllers
 {
-    public class PostsController : Controller
+    public class ProductsController : Controller
     {
         private readonly ApplicationDbContext _context;
 
-        public PostsController(ApplicationDbContext context)
+        public ProductsController(ApplicationDbContext context)
         {
             _context = context;
         }
 
-        // GET: Posts
+        // GET: Products
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Posts.ToListAsync());
+            var applicationDbContext = _context.Products.Include(p => p.Vendor);
+            return View(await applicationDbContext.ToListAsync());
         }
 
-        // GET: Posts/Details/5
+        // GET: Products/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -31,43 +34,42 @@ namespace WebCore_5._0.Controllers
                 return NotFound();
             }
 
-            var post = await _context.Posts
-                .Include(m => m.Category)//явная загрузка категории
+            var product = await _context.Products
+                .Include(p => p.Vendor)
                 .FirstOrDefaultAsync(m => m.Id == id);
-            if (post == null)
+            if (product == null)
             {
                 return NotFound();
             }
 
-            return View(post);
+            return View(product);
         }
 
-        // GET: Posts/Create
+        // GET: Products/Create
         public IActionResult Create()
         {
-            ViewBag.Category = new SelectList(_context.Categories, "Id", "Name");
+            ViewData["VendorId"] = new SelectList(_context.Vendors, "Id", "Name");
             return View();
         }
 
-        // POST: Posts/Create
+        // POST: Products/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Title,Slug")] Post post, int Category)
+        public async Task<IActionResult> Create([Bind("Id,Name,VendorId")] Product product)
         {
             if (ModelState.IsValid)
             {
-                post.Category = _context.Categories.Find(Category);
-                //_context.Attach(post.Category); //Привязка
-                _context.Add(post);
+                _context.Add(product);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            return View(post);
+            ViewData["VendorId"] = new SelectList(_context.Vendors, "Id", "Name", product.VendorId);
+            return View(product);
         }
 
-        // GET: Posts/Edit/5
+        // GET: Products/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -75,25 +77,23 @@ namespace WebCore_5._0.Controllers
                 return NotFound();
             }
 
-            var post = await _context.Posts
-                .Include(m => m.Category)//явная загрузка категории
-                .FirstOrDefaultAsync(m => m.Id == id);
-            ViewBag.Category = new SelectList(_context.Categories, "Id", "Name", post.Category.Name);
-            if (post == null)
+            var product = await _context.Products.FindAsync(id);
+            if (product == null)
             {
                 return NotFound();
             }
-            return View(post);
+            ViewData["VendorId"] = new SelectList(_context.Vendors, "Id", "Name", product.VendorId);
+            return View(product);
         }
 
-        // POST: Posts/Edit/5
+        // POST: Products/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Title,Slug")] Post post, int Category)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,VendorId")] Product product)
         {
-            if (id != post.Id)
+            if (id != product.Id)
             {
                 return NotFound();
             }
@@ -102,13 +102,12 @@ namespace WebCore_5._0.Controllers
             {
                 try
                 {
-                    post.Category = _context.Categories.Find(Category);
-                    _context.Update(post);
+                    _context.Update(product);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!PostExists(post.Id))
+                    if (!ProductExists(product.Id))
                     {
                         return NotFound();
                     }
@@ -119,10 +118,11 @@ namespace WebCore_5._0.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            return View(post);
+            ViewData["VendorId"] = new SelectList(_context.Vendors, "Id", "Name", product.VendorId);
+            return View(product);
         }
 
-        // GET: Posts/Delete/5
+        // GET: Products/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -130,30 +130,31 @@ namespace WebCore_5._0.Controllers
                 return NotFound();
             }
 
-            var post = await _context.Posts
+            var product = await _context.Products
+                .Include(p => p.Vendor)
                 .FirstOrDefaultAsync(m => m.Id == id);
-            if (post == null)
+            if (product == null)
             {
                 return NotFound();
             }
 
-            return View(post);
+            return View(product);
         }
 
-        // POST: Posts/Delete/5
+        // POST: Products/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var post = await _context.Posts.FindAsync(id);
-            _context.Posts.Remove(post);
+            var product = await _context.Products.FindAsync(id);
+            _context.Products.Remove(product);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
-        private bool PostExists(int id)
+        private bool ProductExists(int id)
         {
-            return _context.Posts.Any(e => e.Id == id);
+            return _context.Products.Any(e => e.Id == id);
         }
     }
 }
