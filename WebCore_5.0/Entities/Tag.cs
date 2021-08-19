@@ -11,6 +11,9 @@ namespace WebCore_5._0.Entities
         public string Name { get; set; }
         public string Slug { get; set; }
 
+        //many to many
+        public ICollection<Product> Products { get; set; }
+
         //public ICollection<Post> Posts { get; set; }
     }
 }

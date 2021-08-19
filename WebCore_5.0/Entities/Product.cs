@@ -13,5 +13,8 @@ namespace WebCore_5._0.Entities
         //Отношение one-many
         public int VendorId { get; set; }//Это поле не обязательно
         public Vendor Vendor { get; set; }
+
+        //many to many
+        public ICollection<Tag> Tags { get; set; }
     }
 }

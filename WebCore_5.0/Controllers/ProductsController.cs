@@ -49,6 +49,7 @@ namespace WebCore_5._0.Controllers
         public IActionResult Create()
         {
             ViewData["VendorId"] = new SelectList(_context.Vendors, "Id", "Name");
+            ViewData["TagsId"] = new SelectList(_context.Tags, "Id", "Name");
             return View();
         }
 
@@ -57,10 +58,11 @@ namespace WebCore_5._0.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Name,VendorId")] Product product)
+        public async Task<IActionResult> Create([Bind("Id,Name,VendorId")] Product product, int[] Tags)
         {
             if (ModelState.IsValid)
             {
+                product.Tags = _context.Tags.Where(p=>Tags.Contains(p.Id)).ToList();
                 _context.Add(product);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
