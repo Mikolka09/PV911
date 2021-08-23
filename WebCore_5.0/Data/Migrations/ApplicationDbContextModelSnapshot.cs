@@ -70,7 +70,7 @@ namespace WebCore_5._0.Data.Migrations
                     b.ToTable("AspNetRoleClaims");
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.MyUserClaim<string>", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -94,7 +94,7 @@ namespace WebCore_5._0.Data.Migrations
                     b.ToTable("AspNetUserClaims");
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.MyUserLogin<string>", b =>
                 {
                     b.Property<string>("LoginProvider")
                         .HasMaxLength(128)
@@ -118,7 +118,7 @@ namespace WebCore_5._0.Data.Migrations
                     b.ToTable("AspNetUserLogins");
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<string>", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.MyUserRole<string>", b =>
                 {
                     b.Property<string>("UserId")
                         .HasColumnType("nvarchar(450)");
@@ -133,7 +133,7 @@ namespace WebCore_5._0.Data.Migrations
                     b.ToTable("AspNetUserRoles");
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.MyUserToken<string>", b =>
                 {
                     b.Property<string>("UserId")
                         .HasColumnType("nvarchar(450)");
@@ -250,6 +250,62 @@ namespace WebCore_5._0.Data.Migrations
                     b.ToTable("Products");
                 });
 
+            modelBuilder.Entity("WebCore_5._0.Entities.School.Groupp", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("TeacherId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TeacherId")
+                        .IsUnique();
+
+                    b.ToTable("Groups");
+                });
+
+            modelBuilder.Entity("WebCore_5._0.Entities.School.Student", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int>("GrouppId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("GrouppId");
+
+                    b.ToTable("Students");
+                });
+
+            modelBuilder.Entity("WebCore_5._0.Entities.School.Teacher", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Teachers");
+                });
+
             modelBuilder.Entity("WebCore_5._0.Entities.Tag", b =>
                 {
                     b.Property<int>("Id")
@@ -360,7 +416,7 @@ namespace WebCore_5._0.Data.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.MyUserClaim<string>", b =>
                 {
                     b.HasOne("WebCore_5._0.Models.MyUser", null)
                         .WithMany()
@@ -369,7 +425,7 @@ namespace WebCore_5._0.Data.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.MyUserLogin<string>", b =>
                 {
                     b.HasOne("WebCore_5._0.Models.MyUser", null)
                         .WithMany()
@@ -378,7 +434,7 @@ namespace WebCore_5._0.Data.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<string>", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.MyUserRole<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
                         .WithMany()
@@ -393,7 +449,7 @@ namespace WebCore_5._0.Data.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.MyUserToken<string>", b =>
                 {
                     b.HasOne("WebCore_5._0.Models.MyUser", null)
                         .WithMany()
@@ -446,9 +502,41 @@ namespace WebCore_5._0.Data.Migrations
                     b.Navigation("Vendor");
                 });
 
+            modelBuilder.Entity("WebCore_5._0.Entities.School.Groupp", b =>
+                {
+                    b.HasOne("WebCore_5._0.Entities.School.Teacher", "Teacher")
+                        .WithOne("Groupp")
+                        .HasForeignKey("WebCore_5._0.Entities.School.Groupp", "TeacherId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Teacher");
+                });
+
+            modelBuilder.Entity("WebCore_5._0.Entities.School.Student", b =>
+                {
+                    b.HasOne("WebCore_5._0.Entities.School.Groupp", "Groupp")
+                        .WithMany("Students")
+                        .HasForeignKey("GrouppId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Groupp");
+                });
+
             modelBuilder.Entity("WebCore_5._0.Entities.Category", b =>
                 {
                     b.Navigation("Posts");
+                });
+
+            modelBuilder.Entity("WebCore_5._0.Entities.School.Groupp", b =>
+                {
+                    b.Navigation("Students");
+                });
+
+            modelBuilder.Entity("WebCore_5._0.Entities.School.Teacher", b =>
+                {
+                    b.Navigation("Groupp");
                 });
 
             modelBuilder.Entity("WebCore_5._0.Entities.Vendor", b =>

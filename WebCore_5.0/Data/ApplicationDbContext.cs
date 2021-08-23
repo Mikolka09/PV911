@@ -1,14 +1,21 @@
-﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using WebCore_5._0.Entities;
+using WebCore_5._0.Entities.School;
 using WebCore_5._0.Models;
 
 namespace WebCore_5._0.Data
 {
-    public class ApplicationDbContext : IdentityDbContext<MyUser>
+    public class ApplicationDbContext : IdentityDbContext<IdentityUser>
     {
-        public DbSet<Post> Posts { get; set; }  
+
+        public DbSet<Groupp> Groups { get; set; }
+        public DbSet<Teacher> Teachers { get; set; }
+        public DbSet<Student> Students { get; set; }
+        public DbSet<Post> Posts { get; set; }
         public DbSet<Category> Categories { get; set; }
         public DbSet<Vendor> Vendors { get; set; }
         public DbSet<Product> Products { get; set; }
