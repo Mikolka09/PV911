@@ -64,7 +64,7 @@ namespace WebCore_5._0
             {
                 endpoints.MapControllerRoute(
                     name: "default",
-                    pattern: "{controller=Home}/{action=Index}/{id?}");
+                    pattern: "{controller=Ajax}/{action=Index}/{id?}");
                 endpoints.MapRazorPages();
             });
         }

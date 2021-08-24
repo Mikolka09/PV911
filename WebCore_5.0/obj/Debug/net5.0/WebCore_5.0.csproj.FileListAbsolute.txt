@@ -202,3 +202,4 @@ D:\Users\MIKOLKA\PV911\WebCore_5.0\obj\Debug\net5.0\Razor\Views\Teachers\Details
 D:\Users\MIKOLKA\PV911\WebCore_5.0\obj\Debug\net5.0\Razor\Views\Teachers\Edit.cshtml.g.cs
 D:\Users\MIKOLKA\PV911\WebCore_5.0\obj\Debug\net5.0\Razor\Views\Teachers\Index.cshtml.g.cs
 D:\Users\MIKOLKA\PV911\WebCore_5.0\obj\Debug\net5.0\Razor\Views\School\Index.cshtml.g.cs
+D:\Users\MIKOLKA\PV911\WebCore_5.0\obj\Debug\net5.0\Razor\Views\Ajax\Index.cshtml.g.cs
