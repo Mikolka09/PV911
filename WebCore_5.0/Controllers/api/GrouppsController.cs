@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json.Linq;
 using WebCore_5._0.Data;
 using WebCore_5._0.Entities.School;
 
@@ -23,9 +24,16 @@ namespace WebCore_5._0.Controllers.api
 
         // GET: api/Groupps
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Groupp>>> GetGroups()
+        public async Task<ActionResult<IEnumerable<Groupps>>> GetGroups()
         {
-            return await _context.Groups.ToListAsync();
+            var res = await _context.Groups.Include(g => g.Teacher).Select(p=> new Groupps
+            {
+               Id = p.Id,
+               Name = p.Name,
+               Teacher = p.Teacher.Name,
+               Teachers = _context.Teachers.Where(t => t.Groupp == null).ToList()
+            }).ToListAsync();
+            return res;
         }
 
         // GET: api/Groupps/5
@@ -104,5 +112,14 @@ namespace WebCore_5._0.Controllers.api
         {
             return _context.Groups.Any(e => e.Id == id);
         }
+    }
+
+    public class Groupps
+    {
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public string Teacher { get; set; }
+
+        public List<Teacher> Teachers { get; set; }
     }
 }

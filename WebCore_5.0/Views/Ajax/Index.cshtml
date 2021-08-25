@@ -7,18 +7,44 @@
 
 </div>
 
-<section id="mainTeachers">
-    Load...
-</section>
+<div style="display:flex; justify-content: space-between; align-items:center">
+    <div>
+        <h3>Teachers</h3>
+        <section id="mainTeachers">
+            Load...
+        </section>
 
-<section id="newTeacher">
-    <input type="text" id="newTeacherName" />
-    <input type="button" id="btnCreate" value="Create" />
-</section>
+        <section id="newTeacher">
+            <input type="text" id="newTeacherName" />
+            <input type="button" id="btnCreate" value="Create" />
+        </section>
+    </div>
+    <div>
+        <h3>Groups</h3>
+        <section id="mainGroups">
+            Load...
+        </section>
+        <section id="newGroup">
+            <input type="text" id="newGroupName" />
+            <select id="newTeacherG"></select>
+            <input type="button" id="btnCreateG" value="Create" />
+        </section>
+    </div>
+    <div>
+        <h3>Students</h3>
+        <section id="mainStudents">
+            Load...
+        </section>
+        <section id="newStudent">
+            <input type="text" id="newStudentName" />
+            <input type="button" id="btnCreateS" value="Create" />
+        </section>
+    </div>
+</div>
 
 
 <script>
-
+    //Teachers
     function serverResponseAddTeacher(res) {
         console.log(res);
         fetchGetTeachers();
@@ -92,7 +118,7 @@
                     let id = document.getElementById("editNowId").value;
                     let name = document.getElementById("editNowName").value;
 
-                    fetch("/api/teachers/" + id, {
+                    fetch("/api/Teachers/" + id, {
                         method: 'PUT',
                         headers: {
                             'Content-Type': 'application/json'
@@ -121,9 +147,12 @@
                 this.appendChild(btnCancel);
             }
             let span = document.createElement("span");
-            span.innerText = " del ";
-            span.className = json[i].id;
-            span.onclick = function () {
+            let a = document.createElement("a");
+            a.href = "#";
+            a.innerText = " del ";
+            a.style.color = "red";
+            a.className = json[i].id;
+            a.onclick = function () {
                 fetch("/api/Teachers/" + this.className, {
                     method: 'DELETE'
                 })
@@ -133,6 +162,7 @@
                         console.log("Response: " + ex.response);
                     });
             }
+            span.appendChild(a);
             li.appendChild(span);
             ul.appendChild(li);
         }
@@ -154,4 +184,169 @@
 
     fetchGetTeachers();
 
+</script>
+
+<script>
+    //Groups
+    function serverResponseAddGroup(res) {
+        console.log(res);
+        fetchGetGroups();
+    }
+
+    document.getElementById("btnCreateG").onclick = function () {
+        let newGroup = {
+            id: 0,
+            name: document.getElementById("newGroupName").value,
+            teacher: document.getElementById("newTeacherG").value
+        };
+
+        fetch("/api/Groupps", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+                // 'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: JSON.stringify(newGroup)
+        })
+            .then(response => response.json()) // Преобразуем ответ в json
+            .then(json => serverResponseAddGroup(json))
+            .catch((ex) => { // обрабатываем возможную ошибку
+                console.log("Error: " + ex.message);
+                console.log("Response: " + ex.response);
+            });
+        document.getElementById("newGroupName").value = "";
+
+    }
+
+    function renderGroupsList(json) {
+        console.log("Get From Server: ");
+        console.log(json);
+
+        //Очищаем mainGroups
+        let mainGroups = document.getElementById("mainGroups");
+        mainGroups.innerHTML = "";
+
+        //Создаем ul
+        let ul = document.createElement("ul")
+        let selectT = document.getElementById("newTeacherG");
+        let teachers;
+
+        //Создаем коллекцию элементов li и внедрю ее в ul
+        for (var i = 0; i < json.length; i++) {
+            let li = document.createElement("li");
+            teachers = json[0].teachers;
+            li.innerText = json[i].name;
+            li.className = json[i].id;
+            li.ondblclick = function () {
+                let id = this.className;
+                let name = this.innerText;
+                this.innerHTML = "";
+
+                //Поле id
+                let inId = document.createElement("input");
+                inId.type = "hidden";
+                inId.id = "editNowIdG";
+                inId.value = id;
+                this.appendChild(inId);
+
+                //Поле name
+                let inName = document.createElement("input");
+                inName.type = "text";
+                inName.id = "editNowNameG";
+                inName.value = name;
+                this.appendChild(inName);
+
+                //Кнопка Save
+                let btnSave = document.createElement("input");
+                btnSave.type = "button";
+                btnSave.value = "Save";
+                btnSave.onclick = function () {
+                    let id = document.getElementById("editNowIdG").value;
+                    let name = document.getElementById("editNowNameG").value;
+
+                    fetch("/api/Groupps/" + id, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json'
+                            // 'Content-Type': 'application/x-www-form-urlencoded',
+                        },
+                        body: JSON.stringify({
+                            id: id,
+                            name: name
+                        })
+
+                    })
+                        .then(fetchGetGroups)
+                        .catch((ex) => { // обрабатываем возможную ошибку
+                            console.log("Error: " + ex.message);
+                            console.log("Response: " + ex.response);
+                        });
+                }
+                this.appendChild(btnSave);
+
+                let btnCancel = document.createElement("input");
+                btnCancel.type = "button";
+                btnCancel.value = "Cancel"
+                btnCancel.onclick = function () {
+                    fetchGetGroups();
+                }
+                this.appendChild(btnCancel);
+            }
+            let spanT = document.createElement("span");
+            spanT.innerText = "  (" + json[i].teacher + ")";
+            spanT.style.color = "green";
+            let span = document.createElement("span");
+            let a = document.createElement("a");
+            a.href = "#";
+            a.innerText = " del";
+            a.style.color = "red";
+            a.className = json[i].id;
+            a.onclick = function () {
+                fetch("/api/Groupps/" + this.className, {
+                    method: 'DELETE'
+                })
+                    .then(fetchGetGroups) // Преобразуем ответ в json
+                    .catch((ex) => { // обрабатываем возможную ошибку
+                        console.log("Error: " + ex.message);
+                        console.log("Response: " + ex.response);
+                    });
+            }
+            span.appendChild(a);
+            li.appendChild(spanT);
+            li.appendChild(span);
+            ul.appendChild(li);
+        }
+
+        //Заполняю список доступных учителей
+        for (var i = 0; i < teachers.length; i++) {
+            let option = document.createElement("option");
+            option.value = teachers[i].id;
+            option.text = teachers[i].name;
+            selectT.appendChild(option);
+        }
+        let sel = selectT.getElementsByTagName('option');
+        sel[0].selected = true;
+
+        //Внедряю коллекцию в нужный section
+        mainGroups.appendChild(ul);
+
+    }
+
+    // Выполнение запроса к серверу
+    function fetchGetGroups() {
+        fetch("/api/Groupps") // Пошлем запрос GET (по умолчанию) по марштуру на сервер
+            .then(response => response.json()) // Преобразуем ответ в json
+            .then(json => renderGroupsList(json)) // Передадим данные в метод
+            .catch((ex) => { // обрабатываем возможную ошибку
+                console.log("Error: " + ex.message);
+                console.log("Response: " + ex.response);
+            });
+    }
+
+    fetchGetGroups();
+
+</script>
+
+<script>
+    //Students
 </script>
