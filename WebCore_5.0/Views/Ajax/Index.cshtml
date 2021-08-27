@@ -6,8 +6,8 @@
     <h1 class="display-4">Welcome AJAX</h1>
 
 </div>
-
-<div style="display:flex; justify-content: space-between; align-items:center">
+<hr style="color:black; height: 2px;" />
+<div style="display: flex; justify-content: space-between; align-items: start;">
     <div>
         <h3>Teachers</h3>
         <section id="mainTeachers">
@@ -37,6 +37,7 @@
         </section>
         <section id="newStudent">
             <input type="text" id="newStudentName" />
+            <select id="newGroupS"></select>
             <input type="button" id="btnCreateS" value="Create" />
         </section>
     </div>
@@ -89,6 +90,8 @@
         //Создаем коллекцию элементов li и внедрю ее в ul
         for (var i = 0; i < json.length; i++) {
             let li = document.createElement("li");
+            li.title = "Double click - Edit!";
+            li.style.cursor = "pointer";
             li.innerText = json[i].name;
             li.className = json[i].id;
             li.ondblclick = function () {
@@ -107,7 +110,7 @@
                 let inName = document.createElement("input");
                 inName.type = "text";
                 inName.id = "editNowName";
-                inName.value = name;
+                inName.value = String(name).split(" ")[0];
                 this.appendChild(inName);
 
                 //Кнопка Save
@@ -149,11 +152,16 @@
             let span = document.createElement("span");
             let a = document.createElement("a");
             a.href = "#";
-            a.innerText = " del ";
-            a.style.color = "red";
-            a.className = json[i].id;
+            a.title = "";
+            a.className = "btn btn-danger btn-sm";
+            a.style.marginTop = "3px";
+            a.style.marginBottom = "3px";
+            a.style.marginLeft = "5px";
+            a.role = "button";
+            a.innerText = "Del";
+            a.id = json[i].id;
             a.onclick = function () {
-                fetch("/api/Teachers/" + this.className, {
+                fetch("/api/Teachers/" + this.id, {
                     method: 'DELETE'
                 })
                     .then(fetchGetTeachers) // Преобразуем ответ в json
@@ -197,7 +205,7 @@
         let newGroup = {
             id: 0,
             name: document.getElementById("newGroupName").value,
-            teacher: document.getElementById("newTeacherG").value
+            teacherId: document.getElementById("newTeacherG").value
         };
 
         fetch("/api/Groupps", {
@@ -235,6 +243,8 @@
         for (var i = 0; i < json.length; i++) {
             let li = document.createElement("li");
             teachers = json[0].teachers;
+            li.title = "Double click - Edit!";
+            li.style.cursor = "pointer";
             li.innerText = json[i].name;
             li.className = json[i].id;
             li.ondblclick = function () {
@@ -253,9 +263,15 @@
                 let inName = document.createElement("input");
                 inName.type = "text";
                 inName.id = "editNowNameG";
-                inName.value = name;
+                inName.value = String(name).split(" ")[0];;
                 this.appendChild(inName);
 
+                //Список учителей
+                let selectEd = document.createElement("select");
+                selectEd.id = "teacherEdit";
+                this.appendChild(selectEd);
+                AddListTeacher(selectEd);
+               
                 //Кнопка Save
                 let btnSave = document.createElement("input");
                 btnSave.type = "button";
@@ -263,6 +279,7 @@
                 btnSave.onclick = function () {
                     let id = document.getElementById("editNowIdG").value;
                     let name = document.getElementById("editNowNameG").value;
+                    let teacherId = document.getElementById("teacherEdit").value;
 
                     fetch("/api/Groupps/" + id, {
                         method: 'PUT',
@@ -272,7 +289,8 @@
                         },
                         body: JSON.stringify({
                             id: id,
-                            name: name
+                            name: name,
+                            teacherId: teacherId
                         })
 
                     })
@@ -294,15 +312,20 @@
             }
             let spanT = document.createElement("span");
             spanT.innerText = "  (" + json[i].teacher + ")";
-            spanT.style.color = "green";
+            spanT.style.color = "blue";
             let span = document.createElement("span");
             let a = document.createElement("a");
             a.href = "#";
-            a.innerText = " del";
-            a.style.color = "red";
-            a.className = json[i].id;
+            a.title = "";
+            a.className = "btn btn-danger btn-sm";
+            a.style.marginTop = "3px";
+            a.style.marginBottom = "3px";
+            a.style.marginLeft = "5px";
+            a.role = "button";
+            a.innerText = "Del";
+            a.id = json[i].id;
             a.onclick = function () {
-                fetch("/api/Groupps/" + this.className, {
+                fetch("/api/Groupps/" + this.id, {
                     method: 'DELETE'
                 })
                     .then(fetchGetGroups) // Преобразуем ответ в json
@@ -317,15 +340,23 @@
             ul.appendChild(li);
         }
 
-        //Заполняю список доступных учителей
-        for (var i = 0; i < teachers.length; i++) {
-            let option = document.createElement("option");
-            option.value = teachers[i].id;
-            option.text = teachers[i].name;
-            selectT.appendChild(option);
+        AddListTeacher(selectT);
+
+        //Функция заполнения списка доступных учителей
+        function AddListTeacher(select) {
+            let options = document.getElementById(select.id);
+            while (options.firstChild) {
+                options.removeChild(options.firstChild);
+            }
+            for (var i = 0; i < teachers.length; i++) {
+                let option = document.createElement("option");
+                option.value = teachers[i].id;
+                option.text = teachers[i].name;
+                select.appendChild(option);
+            }
+            let sel = select.getElementsByTagName('option');
+            sel[0].selected = true;
         }
-        let sel = selectT.getElementsByTagName('option');
-        sel[0].selected = true;
 
         //Внедряю коллекцию в нужный section
         mainGroups.appendChild(ul);
@@ -349,4 +380,183 @@
 
 <script>
     //Students
+    function serverResponseAddStudent(res) {
+        console.log(res);
+        fetchGetStudents();
+    }
+
+    document.getElementById("btnCreateS").onclick = function () {
+        let newStudent = {
+            id: 0,
+            name: document.getElementById("newStudentName").value,
+            grouppId: document.getElementById("newGroupS").value
+        };
+
+        fetch("/api/Students", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+                // 'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: JSON.stringify(newStudent)
+        })
+            .then(response => response.json()) // Преобразуем ответ в json
+            .then(json => serverResponseAddStudent(json))
+            .catch((ex) => { // обрабатываем возможную ошибку
+                console.log("Error: " + ex.message);
+                console.log("Response: " + ex.response);
+            });
+        document.getElementById("newStudentName").value = "";
+
+    }
+
+    function renderStudentsList(json) {
+        console.log("Get From Server: ");
+        console.log(json);
+
+        //Очищаем mainGroups
+        let mainStudents = document.getElementById("mainStudents");
+        mainStudents.innerHTML = "";
+
+        //Создаем ul
+        let ul = document.createElement("ul")
+        let selectG = document.getElementById("newGroupS");
+        let groups;
+
+        //Создаем коллекцию элементов li и внедрю ее в ul
+        for (var i = 0; i < json.length; i++) {
+            let li = document.createElement("li");
+            groups = json[0].groups;
+            li.title = "Double click - Edit!";
+            li.style.cursor = "pointer";
+            li.innerText = json[i].name;
+            li.className = json[i].id;
+            li.ondblclick = function () {
+                let id = this.className;
+                let name = this.innerText;
+                this.innerHTML = "";
+
+                //Поле id
+                let inId = document.createElement("input");
+                inId.type = "hidden";
+                inId.id = "editNowIdS";
+                inId.value = id;
+                this.appendChild(inId);
+
+                //Поле name
+                let inName = document.createElement("input");
+                inName.type = "text";
+                inName.id = "editNowNameS";
+                inName.value = String(name).split("(")[0];;
+                this.appendChild(inName);
+
+                //Список учителей
+                let selectEdit = document.createElement("select");
+                selectEdit.id = "groupEdit";
+                this.appendChild(selectEdit);
+                AddListGroup(selectEdit);
+
+                //Кнопка Save
+                let btnSave = document.createElement("input");
+                btnSave.type = "button";
+                btnSave.value = "Save";
+                btnSave.onclick = function () {
+                    let id = document.getElementById("editNowIdS").value;
+                    let name = document.getElementById("editNowNameS").value;
+                    let groupId = document.getElementById("groupEdit").value;
+
+                    fetch("/api/Students/" + id, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json'
+                            // 'Content-Type': 'application/x-www-form-urlencoded',
+                        },
+                        body: JSON.stringify({
+                            id: id,
+                            name: name,
+                            grouppId: groupId
+                        })
+
+                    })
+                        .then(fetchGetStudents)
+                        .catch((ex) => { // обрабатываем возможную ошибку
+                            console.log("Error: " + ex.message);
+                            console.log("Response: " + ex.response);
+                        });
+                }
+                this.appendChild(btnSave);
+
+                let btnCancel = document.createElement("input");
+                btnCancel.type = "button";
+                btnCancel.value = "Cancel"
+                btnCancel.onclick = function () {
+                    fetchGetStudents();
+                }
+                this.appendChild(btnCancel);
+            }
+            let spanG = document.createElement("span");
+            spanG.innerText = "  (" + json[i].group + ", " + json[i].teacher + ")";
+            spanG.style.color = "blue";
+            let span = document.createElement("span");
+            let a = document.createElement("a");
+            a.href = "#";
+            a.title = "";
+            a.className = "btn btn-danger btn-sm";
+            a.style.marginTop = "3px";
+            a.style.marginBottom = "3px";
+            a.style.marginLeft = "5px";
+            a.role = "button";
+            a.innerText = "Del";
+            a.id = json[i].id;
+            a.onclick = function () {
+                fetch("/api/Students/" + this.id, {
+                    method: 'DELETE'
+                })
+                    .then(fetchGetStudents) // Преобразуем ответ в json
+                    .catch((ex) => { // обрабатываем возможную ошибку
+                        console.log("Error: " + ex.message);
+                        console.log("Response: " + ex.response);
+                    });
+            }
+            span.appendChild(a);
+            li.appendChild(spanG);
+            li.appendChild(span);
+            ul.appendChild(li);
+        }
+
+        AddListGroup(selectG);
+
+        //Функция заполнения списка доступных учителей
+        function AddListGroup(select) {
+            let options = document.getElementById(select.id);
+            while (options.firstChild) {
+                options.removeChild(options.firstChild);
+            }
+            for (var i = 0; i < groups.length; i++) {
+                let option = document.createElement("option");
+                option.value = groups[i].id;
+                option.text = groups[i].name;
+                select.appendChild(option);
+            }
+            let sel = select.getElementsByTagName('option');
+            sel[0].selected = true;
+        }
+
+        //Внедряю коллекцию в нужный section
+        mainStudents.appendChild(ul);
+
+    }
+
+    // Выполнение запроса к серверу
+    function fetchGetStudents() {
+        fetch("/api/Students") // Пошлем запрос GET (по умолчанию) по марштуру на сервер
+            .then(response => response.json()) // Преобразуем ответ в json
+            .then(json => renderStudentsList(json)) // Передадим данные в метод
+            .catch((ex) => { // обрабатываем возможную ошибку
+                console.log("Error: " + ex.message);
+                console.log("Response: " + ex.response);
+            });
+    }
+
+    fetchGetStudents();
 </script>

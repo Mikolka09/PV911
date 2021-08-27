@@ -23,9 +23,17 @@ namespace WebCore_5._0.Controllers.api
 
         // GET: api/Students
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Student>>> GetStudents()
+        public async Task<ActionResult<IEnumerable<Students>>> GetStudents()
         {
-            return await _context.Students.ToListAsync();
+            var res = await _context.Students.Include(g => g.Groupp).Select(p => new Students
+            {
+                Id = p.Id,
+                Name = p.Name,
+                Group = p.Groupp.Name,
+                Teacher = p.Groupp.Teacher.Name,
+                Groups = _context.Groups.ToList()
+            }).ToListAsync();
+            return res;
         }
 
         // GET: api/Students/5
@@ -103,6 +111,16 @@ namespace WebCore_5._0.Controllers.api
         private bool StudentExists(int id)
         {
             return _context.Students.Any(e => e.Id == id);
+        }
+
+        public class Students
+        {
+            public int Id { get; set; }
+            public string Name { get; set; }
+            public string Group { get; set; }
+            public string Teacher { get; set; }
+
+            public List<Groupp> Groups { get; set; }
         }
     }
 }
