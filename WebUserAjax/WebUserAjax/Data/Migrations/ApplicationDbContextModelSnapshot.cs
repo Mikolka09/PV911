@@ -225,6 +225,62 @@ namespace WebUserAjax.Data.Migrations
                     b.ToTable("AspNetUsers");
                 });
 
+            modelBuilder.Entity("WebUserAjax.Entities.School.Groupp", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("TeacherId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TeacherId")
+                        .IsUnique();
+
+                    b.ToTable("Groups");
+                });
+
+            modelBuilder.Entity("WebUserAjax.Entities.School.Student", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int>("GrouppId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("GrouppId");
+
+                    b.ToTable("Students");
+                });
+
+            modelBuilder.Entity("WebUserAjax.Entities.School.Teacher", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Teachers");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
@@ -274,6 +330,38 @@ namespace WebUserAjax.Data.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("WebUserAjax.Entities.School.Groupp", b =>
+                {
+                    b.HasOne("WebUserAjax.Entities.School.Teacher", "Teacher")
+                        .WithOne("Groupp")
+                        .HasForeignKey("WebUserAjax.Entities.School.Groupp", "TeacherId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Teacher");
+                });
+
+            modelBuilder.Entity("WebUserAjax.Entities.School.Student", b =>
+                {
+                    b.HasOne("WebUserAjax.Entities.School.Groupp", "Groupp")
+                        .WithMany("Students")
+                        .HasForeignKey("GrouppId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Groupp");
+                });
+
+            modelBuilder.Entity("WebUserAjax.Entities.School.Groupp", b =>
+                {
+                    b.Navigation("Students");
+                });
+
+            modelBuilder.Entity("WebUserAjax.Entities.School.Teacher", b =>
+                {
+                    b.Navigation("Groupp");
                 });
 #pragma warning restore 612, 618
         }
