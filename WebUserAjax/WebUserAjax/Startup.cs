@@ -34,6 +34,7 @@ namespace WebUserAjax
             services.AddDatabaseDeveloperPageExceptionFilter();
 
             services.AddDefaultIdentity<ProjectUser>(options => options.SignIn.RequireConfirmedAccount = false)
+                .AddRoles<IdentityRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>();
             services.AddControllersWithViews();
         }
