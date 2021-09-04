@@ -7,9 +7,19 @@
 
 <h1>Admin Account Controller</h1>
 <div>TODO: тут будет работа с пользователями и ролями</div>
+<style>
+    .avatar {
+        width: 75px;
+        border-radius: 50%;
+        border: 2px solid #808080;
+    }
+</style>
 <table class="table">
     <thead>
         <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Avatar)
+            </th>
             <th>
                 @Html.DisplayNameFor(model => model.Email)
             </th>
@@ -26,6 +36,9 @@
         @foreach (var item in Model)
         {
         <tr>
+            <td>
+                <img src="@item.Avatar" class="avatar" />
+            </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Email)
             </td>

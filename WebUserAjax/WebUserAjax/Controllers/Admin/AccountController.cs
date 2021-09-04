@@ -1,12 +1,17 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using WebUserAjax.Entities;
+
+
 
 namespace WebUserAjax.Controllers.Admin
 {
@@ -28,20 +33,14 @@ namespace WebUserAjax.Controllers.Admin
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create(string Email, string Password, string[] addRoles)
+        public async Task<IActionResult> RoleCreate(string name)
         {
-            if (ModelState.IsValid)
+            if (!string.IsNullOrEmpty(name))
             {
-                ProjectUser user = new ProjectUser { Email = Email, UserName = Email };
-                // добавляем пользователя
-                var result = await _userManager.CreateAsync(user, Password);
+                IdentityResult result = await _roleManager.CreateAsync(new IdentityRole(name));
                 if (result.Succeeded)
                 {
-
-                    // var addRoles = newUser.Roles.Select(r => r.Name).ToList();
-                    await _userManager.AddToRolesAsync(user, addRoles);
-
-                    return RedirectToAction("Index");
+                    return RedirectToAction("RoleIndex");
                 }
                 else
                 {
@@ -51,7 +50,7 @@ namespace WebUserAjax.Controllers.Admin
                     }
                 }
             }
-            return View("~/Views/Admin/Account/Create.cshtml");
+            return View(name);
         }
 
         #endregion
@@ -81,13 +80,15 @@ namespace WebUserAjax.Controllers.Admin
         private readonly UserManager<ProjectUser> _userManager;
         private readonly SignInManager<ProjectUser> _signInManager;
         private readonly RoleManager<IdentityRole> _roleManager;
+        private readonly IWebHostEnvironment _environment; // Данные по настроке хоста
 
 
-        public AccountController(UserManager<ProjectUser> userManager, SignInManager<ProjectUser> signInManager, RoleManager<IdentityRole> roleManager)
+        public AccountController(UserManager<ProjectUser> userManager, SignInManager<ProjectUser> signInManager, RoleManager<IdentityRole> roleManager, IWebHostEnvironment environment)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _roleManager = roleManager;
+            _environment = environment;
         }
 
         #region Работа с пользователями
@@ -106,17 +107,36 @@ namespace WebUserAjax.Controllers.Admin
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create([Bind("Email, Password, Roles")] VM_RegisterUser newUser)
+        public async Task<IActionResult> Create(string Email, string Password, string[] addRoles, IFormFile AvatarFile)
         {
             if (ModelState.IsValid)
             {
-                ProjectUser user = new ProjectUser { Email = newUser.Email, UserName = newUser.Email };
+                ProjectUser user = new ProjectUser { Email = Email, UserName = Email };
+
+
+                #region Обработка изображения
+
+                var wwwRootPath = _environment.WebRootPath; // URL - для сайта
+                var fileName = Path.GetRandomFileName().Replace('.', '_')
+                     + Path.GetExtension(AvatarFile.FileName);
+                var filePath = Path.Combine(wwwRootPath + "\\storage\\avatars\\", fileName); // Реальный путь 
+                
+                user.Avatar = "/storage/avatars/" + fileName; // ссылка на картинку
+
+                using (var stream = System.IO.File.Create(filePath))
+                {
+                    await AvatarFile.CopyToAsync(stream);
+                }
+
+
+                #endregion
+
                 // добавляем пользователя
-                var result = await _userManager.CreateAsync(user, newUser.Password);
+                var result = await _userManager.CreateAsync(user, Password);
                 if (result.Succeeded)
                 {
 
-                    var addRoles = newUser.Roles.Select(r => r.Name).ToList();
+                    // var addRoles = newUser.Roles.Select(r => r.Name).ToList();
                     await _userManager.AddToRolesAsync(user, addRoles);
 
                     return RedirectToAction("Index");
@@ -129,8 +149,10 @@ namespace WebUserAjax.Controllers.Admin
                     }
                 }
             }
-            return View(newUser);
+            return View("~/Views/Admin/Account/Create.cshtml");
         }
+
+       
 
         #endregion
 
