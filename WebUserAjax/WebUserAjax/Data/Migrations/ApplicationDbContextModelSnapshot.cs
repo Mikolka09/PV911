@@ -284,6 +284,53 @@ namespace WebUserAjax.Data.Migrations
                     b.ToTable("Teachers");
                 });
 
+            modelBuilder.Entity("WebUserAjax.Entities.Slider.SliderGroup", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Number")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("SliderGroups");
+                });
+
+            modelBuilder.Entity("WebUserAjax.Entities.SliderItem", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("ImgUrl")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("SliderGroupId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Text")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Title")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Url")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SliderGroupId");
+
+                    b.ToTable("SliderItems");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
@@ -357,6 +404,17 @@ namespace WebUserAjax.Data.Migrations
                     b.Navigation("Groupp");
                 });
 
+            modelBuilder.Entity("WebUserAjax.Entities.SliderItem", b =>
+                {
+                    b.HasOne("WebUserAjax.Entities.Slider.SliderGroup", "SliderGroup")
+                        .WithMany("SliderItems")
+                        .HasForeignKey("SliderGroupId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("SliderGroup");
+                });
+
             modelBuilder.Entity("WebUserAjax.Entities.School.Groupp", b =>
                 {
                     b.Navigation("Students");
@@ -365,6 +423,11 @@ namespace WebUserAjax.Data.Migrations
             modelBuilder.Entity("WebUserAjax.Entities.School.Teacher", b =>
                 {
                     b.Navigation("Groupp");
+                });
+
+            modelBuilder.Entity("WebUserAjax.Entities.Slider.SliderGroup", b =>
+                {
+                    b.Navigation("SliderItems");
                 });
 #pragma warning restore 612, 618
         }

@@ -6,6 +6,8 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="bootstrap" Version="5.1.0" />
+    <PackageReference Include="bootstrap.sass" Version="5.1.0" />
     <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="5.0.9" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="5.0.9" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="5.0.9" />
@@ -19,6 +21,7 @@
 
   <ItemGroup>
     <Folder Include="wwwroot\storage\avatars\" />
+    <Folder Include="wwwroot\storage\sliders\" />
   </ItemGroup>
 
 </Project>

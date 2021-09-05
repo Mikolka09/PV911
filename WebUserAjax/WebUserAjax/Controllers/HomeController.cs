@@ -1,10 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Threading.Tasks;
+using WebUserAjax.Data;
 using WebUserAjax.Models;
 
 namespace WebUserAjax.Controllers
@@ -13,13 +12,16 @@ namespace WebUserAjax.Controllers
     {
         private readonly ILogger<HomeController> _logger;
 
-        public HomeController(ILogger<HomeController> logger)
+        private readonly ApplicationDbContext _context;
+        public HomeController(ILogger<HomeController> logger, ApplicationDbContext context)
         {
             _logger = logger;
+            _context = context;
         }
 
         public IActionResult Index()
         {
+            ViewBag.Sliders = _context.SliderGroups.Include(sg => sg.SliderItems).Where(g => g.Id == 1).FirstOrDefault().SliderItems;
             return View();
         }
 

@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.IO;
@@ -58,6 +59,14 @@ namespace WebUserAjax.Controllers.Admin
         //VM расположенная прямо в контролере
         public class VM_RegisterUser
         {
+            [Required]
+            [Display(Name = "FirstName")]
+            public string FirstName { get; set; }
+
+            [Required]
+            [Display(Name = "LastName")]
+
+            public string LastName { get; set; }
 
             [Required]
             [EmailAddress]
@@ -107,11 +116,11 @@ namespace WebUserAjax.Controllers.Admin
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create(string Email, string Password, string[] addRoles, IFormFile AvatarFile)
+        public async Task<IActionResult> Create(string FirstName, string LastName, string Email, string Password, string[] addRoles, IFormFile AvatarFile)
         {
             if (ModelState.IsValid)
             {
-                ProjectUser user = new ProjectUser { Email = Email, UserName = Email };
+                ProjectUser user = new ProjectUser { FirstName = FirstName, LastName = LastName, Email = Email, UserName = Email };
 
 
                 #region Обработка изображения
@@ -120,7 +129,7 @@ namespace WebUserAjax.Controllers.Admin
                 var fileName = Path.GetRandomFileName().Replace('.', '_')
                      + Path.GetExtension(AvatarFile.FileName);
                 var filePath = Path.Combine(wwwRootPath + "\\storage\\avatars\\", fileName); // Реальный путь 
-                
+
                 user.Avatar = "/storage/avatars/" + fileName; // ссылка на картинку
 
                 using (var stream = System.IO.File.Create(filePath))
@@ -152,9 +161,83 @@ namespace WebUserAjax.Controllers.Admin
             return View("~/Views/Admin/Account/Create.cshtml");
         }
 
-       
-
         #endregion
+        // GET: Account/Edit/5
+        public async Task<IActionResult> Edit(string id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var user = await _userManager.FindByIdAsync(id);
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            return View("~/Views/Admin/Account/Edit.cshtml", user);
+        }
+
+        // POST: Account/Edit/5
+        // To protect from overposting attacks, enable the specific properties you want to bind to.
+        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(string id, [Bind("Id, FirstName, LastName, Email")] ProjectUser user, IFormFile AvatarFile)
+        {
+            if (id != user.Id)
+            {
+                return NotFound();
+            }
+
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    ProjectUser projectUser = await _userManager.FindByIdAsync(id);
+                    projectUser.FirstName = user.FirstName;
+                    projectUser.LastName = user.LastName;
+                    if (user.Email != projectUser.Email)
+                    {
+                        projectUser.Email = user.Email;
+                        projectUser.UserName = user.Email;
+                        projectUser.NormalizedEmail = user.Email.ToUpper();
+                        projectUser.NormalizedUserName = user.Email.ToUpper();
+                    }
+                    if (AvatarFile != null)
+                    {
+
+                        #region Обработка изображения
+
+                        var wwwRootPath = _environment.WebRootPath; // URL - для сайта
+                        var fileName = Path.GetRandomFileName().Replace('.', '_')
+                             + Path.GetExtension(AvatarFile.FileName);
+                        var filePath = Path.Combine(wwwRootPath + "\\storage\\avatars\\", fileName); // Реальный путь 
+
+                        projectUser.Avatar = "/storage/avatars/" + fileName; // ссылка на картинку
+
+                        using (var stream = System.IO.File.Create(filePath))
+                        {
+                            await AvatarFile.CopyToAsync(stream);
+                        }
+
+                        #endregion
+                       
+                    }
+                    await _userManager.UpdateAsync(projectUser);
+                }
+                catch (Exception)
+                {
+                    throw;
+                }
+                return RedirectToAction(nameof(Index));
+            }
+            return View("~/Views/Admin/Account/Edit.cshtml", user);
+
+        }
+
 
     }
 }
+

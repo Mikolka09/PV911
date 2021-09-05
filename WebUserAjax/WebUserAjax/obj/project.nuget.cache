@@ -1,9 +1,11 @@
 {
   "version": 2,
-  "dgSpecHash": "wAY41+KaEKB5QbL+2p6vIozDDylVuh0f5tByVoshvd1ZNvRw0ik9exvSqVvd9V1Ysp0+WG03WrBmz6AaIo9zXA==",
+  "dgSpecHash": "aHYJ3jy/kNRt4h3+hutivwTO/CaRWU/nLNXXkzvaJCiknw+NgYV5gK32kIV7Qo4rOd8Bhv+yAs2E5O/F8RgGcQ==",
   "success": true,
   "projectFilePath": "D:\\Users\\MIKOLKA\\PV911\\WebUserAjax\\WebUserAjax\\WebUserAjax.csproj",
   "expectedPackageFiles": [
+    "C:\\Users\\MIKOLKA\\.nuget\\packages\\bootstrap\\5.1.0\\bootstrap.5.1.0.nupkg.sha512",
+    "C:\\Users\\MIKOLKA\\.nuget\\packages\\bootstrap.sass\\5.1.0\\bootstrap.sass.5.1.0.nupkg.sha512",
     "C:\\Users\\MIKOLKA\\.nuget\\packages\\humanizer.core\\2.8.26\\humanizer.core.2.8.26.nupkg.sha512",
     "C:\\Users\\MIKOLKA\\.nuget\\packages\\microsoft.aspnetcore.cryptography.internal\\5.0.9\\microsoft.aspnetcore.cryptography.internal.5.0.9.nupkg.sha512",
     "C:\\Users\\MIKOLKA\\.nuget\\packages\\microsoft.aspnetcore.cryptography.keyderivation\\5.0.9\\microsoft.aspnetcore.cryptography.keyderivation.5.0.9.nupkg.sha512",
